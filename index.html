@@ -1,0 +1,23 @@
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  </head>
+  <body>
+    <div id="map" style="height: 500px;"></div>
+  
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      // 初始化地圖，設定中心位置與縮放等級
+      const map = L.map('map').setView([24.8370219, 121.0042495], 15);
+  
+      // 加入圖資（OpenStreetMap）
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  
+      // 加入一個標記點
+      L.marker([24.8370219, 121.0042495]).addTo(map)
+        .bindPopup('竹北高中').openPopup();
+    </script>
+  </body>
+
+  
+
+  

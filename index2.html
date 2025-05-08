@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>竹北高中附近美食地圖</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 90vh; width: 100%; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center;">📍 所有地點標記</h2>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // 初始化地圖並設定預設中心與縮放
+        const map = L.map('map').setView([24.8370219, 121.0042495], 13);
+
+        // 加入 OSM 底圖
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '地圖資料 &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> 貢獻者',
+        }).addTo(map);
+
+        // 從後端獲取地點資料並加入地圖
+        fetch('/restaurant')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(loc => {
+                    L.marker([loc.lat, loc.lon])
+                        .addTo(map)
+                        .bindPopup(loc.name);
+                });
+            });
+    </script>
+</body>
+</html>
