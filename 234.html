@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>隨機餐廳選擇器</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 50px; }
+    button { font-size: 20px; padding: 10px 20px; }
+    #result { margin-top: 30px; font-size: 24px; color: #d9534f; }
+  </style>
+</head>
+<body>
+  <h1>今天吃什麼？</h1>
+  <button onclick="pickRandomRestaurant()">選一間餐廳</button>
+  <div id="result"></div>
+
+  <script>
+    const restaurants = [
+      '必勝客', '竹北豆漿大王', '丐幫滷味', '東家便當', '3Q脆皮雞排', '505 Thai', '多多快餐', '永和豆漿',
+      '瑞斯飯糰', '吉賀嘉羊肉料理食堂', '來來活海鮮', '自在精緻自助餐', '奕家親YiJiaChin', '竹豐麻油雞', '芳芳小吃店',
+      '東方麵線糊', '十方小館', '香也烤肉飯', '佳珍小吃店', '京站早點', '太后雞排', 'Nice Nine 雙醬咖哩', '蘿勒義麵坊',
+      '竹北排骨酥麵', '鐵屋涼麵', '旺角冰室湯包', '龍記地瓜球', '微風飯糰', '老菜櫥', '台巨早餐屋', '佳欣麵線糊',
+      '好吃肉羹麵', '八方魯肉飯', '(郎)港式鮮肉包', '田記烤鴨', '尼哥飯糰', '良吉一丼屋', '爆Q美式炸雞', '老劉牛肉麵',
+      '呷粗飽快餐', '竹間精緻鍋物', '幽靈馬車', '余師傅手工包子養生饅頭', '鼎味食堂', '小江本丸本舖', '老范放山土雞',
+      'Dumpling 水餃 Station'
+    ];
+
+    function pickRandomRestaurant() {
+      const randomIndex = Math.floor(Math.random() * restaurants.length);
+      const choice = restaurants[randomIndex];
+      document.getElementById('result').textContent = '👉 今天吃：' + choice;
+    }
+  </script>
+</body>
+</html>
