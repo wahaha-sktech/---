@@ -1,34 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8">
-  <title>隨機餐廳選擇器</title>
+  <meta charset="utf-8" />
+  <title>竹北高中附近美食地圖與隨機選擇器</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; }
-    button { font-size: 20px; padding: 10px 20px; }
-    #result { margin-top: 30px; font-size: 24px; color: #d9534f; }
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      height: 70vh;
+      width: 100%;
+    }
+    .random-picker {
+      text-align: center;
+      padding: 30px;
+      background-color: #f8f9fa;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #d9534f;
+    }
+    h1,
+    h2 {
+      margin: 20px 0;
+    }
   </style>
 </head>
 <body>
-  <h1>今天吃什麼？</h1>
-  <button onclick="pickRandomRestaurant()">選一間餐廳</button>
-  <div id="result"></div>
+  <h2 style="text-align: center;">📍 竹北高中附近美食地圖</h2>
+  <div id="map"></div>
 
+  <div class="random-picker">
+    <h1>今天吃什麼？</h1>
+    <button onclick="pickRandomRestaurant()">選一間餐廳</button>
+    <div id="result"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
+    // 初始化地圖
+    const map = L.map("map").setView([24.8370219, 121.0042495], 15);
+
+    // 加入 OSM 底圖
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '地圖資料 &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> 貢獻者',
+    }).addTo(map);
+
+    // 餐廳資料（名稱 + 經緯度）
     const restaurants = [
-      '必勝客', '竹北豆漿大王', '丐幫滷味', '東家便當', '3Q脆皮雞排', '505 Thai', '多多快餐', '永和豆漿',
-      '瑞斯飯糰', '吉賀嘉羊肉料理食堂', '來來活海鮮', '自在精緻自助餐', '奕家親YiJiaChin', '竹豐麻油雞', '芳芳小吃店',
-      '東方麵線糊', '十方小館', '香也烤肉飯', '佳珍小吃店', '京站早點', '太后雞排', 'Nice Nine 雙醬咖哩', '蘿勒義麵坊',
-      '竹北排骨酥麵', '鐵屋涼麵', '旺角冰室湯包', '龍記地瓜球', '微風飯糰', '老菜櫥', '台巨早餐屋', '佳欣麵線糊',
-      '好吃肉羹麵', '八方魯肉飯', '(郎)港式鮮肉包', '田記烤鴨', '尼哥飯糰', '良吉一丼屋', '爆Q美式炸雞', '老劉牛肉麵',
-      '呷粗飽快餐', '竹間精緻鍋物', '幽靈馬車', '余師傅手工包子養生饅頭', '鼎味食堂', '小江本丸本舖', '老范放山土雞',
-      'Dumpling 水餃 Station'
+      { name: "必勝客", lat: 24.8392334, lon: 121.0050884 },
+      { name: "竹北豆漿大王", lat: 24.8361431, lon: 121.0082818 },
+      { name: "丐幫滷味", lat: 24.8351138, lon: 121.0084183 },
+      { name: "東家便當", lat: 24.8387818, lon: 121.0054488 },
+      { name: "3Q脆皮雞排", lat: 24.8385188, lon: 121.0054782 },
+      { name: "505 Thai", lat: 24.8384232, lon: 121.0056839 },
+      { name: "多多快餐", lat: 24.8389451, lon: 121.0050608 },
+      { name: "永和豆漿", lat: 24.8389932, lon: 121.0049542 },
+      { name: "瑞斯飯糰", lat: 24.8391095, lon: 121.0046777 },
+      { name: "吉賀嘉羊肉料理食堂", lat: 24.8392019, lon: 121.0045069 },
+      { name: "來來活海鮮", lat: 24.8396795, lon: 121.0034100 },
+      { name: "自在精緻自助餐", lat: 24.8392389, lon: 121.0044132 },
+      { name: "奕家親YiJiaChin", lat: 24.8382742, lon: 121.0072843 },
+      { name: "竹豐麻油雞", lat: 24.8381888, lon: 121.0072345 },
+      { name: "芳芳小吃店", lat: 24.8381125, lon: 121.0071931 },
+      { name: "東方麵線糊", lat: 24.8380258, lon: 121.0071475 },
+      { name: "十方小館", lat: 24.8382548, lon: 121.0074597 },
+      { name: "香也烤肉飯", lat: 24.8390733, lon: 121.0079104 },
+      { name: "佳珍小吃店", lat: 24.8391520, lon: 121.0077352 },
+      { name: "京站早點", lat: 24.8392832, lon: 121.0078490 },
+      { name: "太后雞排", lat: 24.8393867, lon: 121.0020069 },
+      { name: "Nice Nine 雙醬咖哩", lat: 24.8393285, lon: 121.0019268 },
+      { name: "蘿勒義麵坊", lat: 24.8392682, lon: 121.0018604 },
+      { name: "竹北排骨酥麵", lat: 24.8394585, lon: 121.0018751 },
+      { name: "鐵屋涼麵", lat: 24.8389797, lon: 121.0013167 },
+      { name: "旺角冰室湯包", lat: 24.8388775, lon: 121.0012056 },
+      { name: "龍記地瓜球", lat: 24.8389195, lon: 121.0012365 },
+      { name: "微風飯糰", lat: 24.8389559, lon: 121.0012689 },
+      { name: "老菜櫥", lat: 24.8388621, lon: 121.0013892 },
+      { name: "台巨早餐屋", lat: 24.8384085, lon: 121.0011300 },
+      { name: "佳欣麵線糊", lat: 24.8383917, lon: 121.0011763 },
+      { name: "好吃肉羹麵", lat: 24.8383805, lon: 121.0012226 },
+      { name: "八方魯肉飯", lat: 24.8396440, lon: 121.0054904 },
+      { name: "(郎)港式鮮肉包", lat: 24.8390965, lon: 121.0054758 },
+      { name: "田記烤鴨", lat: 24.8390346, lon: 121.0054725 },
+      { name: "尼哥飯糰", lat: 24.8375935, lon: 121.0053428 },
+      { name: "良吉一丼屋", lat: 24.8365594, lon: 121.0061232 },
+      { name: "爆Q美式炸雞", lat: 24.8364907, lon: 121.0057458 },
+      { name: "老劉牛肉麵", lat: 24.8368114, lon: 121.0063425 },
+      { name: "呷粗飽快餐", lat: 24.8368457, lon: 121.0049176 },
+      { name: "竹間精緻鍋物", lat: 24.8371388, lon: 121.0049485 },
+      { name: "幽靈馬車", lat: 24.8369568, lon: 121.0045736 },
+      { name: "余師傅手工包子養生饅頭", lat: 24.8370184, lon: 121.0044132 },
+      { name: "鼎味食堂", lat: 24.8369887, lon: 121.0045097 },
+      { name: "小江本丸本舖", lat: 24.8370539, lon: 121.0043127 },
+      { name: "老范放山土雞", lat: 24.8370915, lon: 121.0038543 },
+      { name: "Dumpling 水餃 Station", lat: 24.8392999, lon: 121.0095692 },
     ];
 
+    // 建立並加入所有標記
+    restaurants.forEach((loc) => {
+      L.marker([loc.lat, loc.lon])
+        .addTo(map)
+        .bindPopup(loc.name);
+    });
+
+    // 隨機選擇餐廳並移動地圖
     function pickRandomRestaurant() {
       const randomIndex = Math.floor(Math.random() * restaurants.length);
       const choice = restaurants[randomIndex];
-      document.getElementById('result').textContent = '👉 今天吃：' + choice;
+      document.getElementById("result").textContent = "👉 今天吃：" + choice.name;
+      map.setView([choice.lat, choice.lon], 17);
+      // 開啟對應的 popup
+      L.popup()
+        .setLatLng([choice.lat, choice.lon])
+        .setContent(choice.name)
+        .openOn(map);
     }
   </script>
 </body>
